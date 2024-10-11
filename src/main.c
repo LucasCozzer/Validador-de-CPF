@@ -4,13 +4,16 @@
 // importação das bibliotecas padrões do sistema
 
 // funções para verificações de formatos
-int is_lencpf(char *cpf); // contém 11 digitos?
-int is_numericcpf(char *cpf); // são númericos
-int is_valid(char *cpf); // verificar se é inválido '111.111.111-11'
+int is_lencpf(const char *cpf); // contém 11 digitos?
+int is_numericcpf(const char *cpf); // são númericos
+int is_valid(const char *cpf); // verificar se é inválido '111.111.111-11'
 
 // funções para calculo digito
-int primary_dig(char *cpf); // calcula o primeiro digito
-int second_dig(char *cpf, int primary_dig); // calcula o segundo digito
+int calculate_digit(const char * cpf, int length);
+
+
+
+
 
 
 // main
@@ -24,7 +27,10 @@ int main (int argc, char **argv) {
         return 1;
     }
 
-    if ((cpf[strlen(cpf) - 2] - '0') == primary_dig(cpf) && (cpf[strlen(cpf) - 1] - '0') == second_dig(cpf, primary_dig(cpf))) {
+    int primary_dig = calculate_digit(cpf, 9);
+    int second_dig = calculate_digit(cpf, 10);  
+
+    if ((cpf[strlen(cpf) == 14 ? 12 : 9] - '0') == primary_dig && (cpf[strlen(cpf) == 14 ? 13 : 10] - '0') == second_dig) {
         printf("CPF e valido\n");
         return 0;
     } else {
@@ -34,72 +40,55 @@ int main (int argc, char **argv) {
 
 }
 
+
+
+
+
 // funções para verificações de formatos
-int is_lencpf (char *cpf) {
-    return strlen(cpf) == 14 || strlen(cpf) == 11 ? 1 : 0;
+int is_lencpf (const char *cpf) {
+    int count = 0;
+    for (int i = 0; cpf[i]; i++) {
+        if (isdigit(cpf[i])) {
+            count++;
+        }
+    }
+    return count == 11;
 }
 
-int is_numericcpf(char *cpf) {
+
+
+int is_numericcpf(const char *cpf) {
     for (int i = 0; *(cpf + i); i++)
-        if (!isdigit(*(cpf + i)) && !ispunct(*(cpf + i))) return 0;
+        if (!isdigit(*(cpf + i)) && cpf[i] != '.' && cpf[i] != '-') return 0;
     return 1;
 }
 
-int is_valid(char *cpf) {
+
+
+
+int is_valid(const char *cpf) {
     return (!strcmp(cpf, "111.111.111-11")) || (!strcmp(cpf, "11111111111")) ? 1 : 0;
 }
 
 
 
 
+
+
 // funções para verificação de digitos
 
-int primary_dig(char *cpf) {
+int calculate_digit(const char * cpf, int length) {
+    int sum = 0; // armazena a soma
+    int weigth = length + 1; // 
 
-    int result_calc = 0; // conter o multiplicação dos 9 primeiros digitos do cpf
-
-    if (strlen(cpf) == 14) {
-        for (int i = 10, m = 2; *(cpf + i); i--){
-            if (i < 0) {
-                return result_calc % 11 >= 2 ? 11 - (result_calc % 11) : 0;
-            }
-            if (!ispunct(*(cpf + i))) {
-                result_calc += (*(cpf + i) - '0') * m;
-                m++;
-            } 
-        }
-    } else {
-        for (int i = 8, m = 2; *(cpf + i); i--){
-            if (i < 0) {
-                return result_calc % 11 >= 2 ? 11 - (result_calc % 11) : 0;
-            }
-            result_calc += (*(cpf + i) - '0') * m;
-            m++;
+    for (int i = 0, count = 0; count < length; i++) {
+        if (isdigit(cpf[i])) {
+            sum += (cpf[i] - '0') * weigth--;
+            count++;
         }
     }
-}
 
+    int result = sum % 11;
 
-int second_dig(char *cpf, int primary_dig) {
-    int result_calc = primary_dig * 2; // conter o multiplicação dos 9 primeiros digitos do cpf
-
-    if (strlen(cpf) == 14) {
-        for (int i = 10, m = 3; *(cpf + i); i--){
-            if (i < 0) {
-                return result_calc % 11 >= 2 ? 11 - (result_calc % 11) : 0;
-            }
-            if (!ispunct(*(cpf + i))) {
-                result_calc += (*(cpf + i) - '0') * m;
-                m++;
-            } 
-        }
-    } else {
-        for (int i = 8, m = 3; *(cpf + i); i--){
-            if (i < 0) {
-                return result_calc % 11 >= 2 ? 11 - (result_calc % 11) : 0;
-            }
-            result_calc += (*(cpf + i) - '0') * m;
-            m++;
-        }
-    }
+    return (result < 2) ? 0 : 11 - result; 
 }
