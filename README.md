@@ -32,9 +32,9 @@ Windows:
 
 Para usar Tic Tac Toe, siga estas etapas:
 
-<code>./validador-cpf</code>
+<code>./validador-cpf 12345678909</code>
 
-O programa informará se o CPF é válido ou inválido com base nos cálculos dos dígitos verificadores.
+Substitua 12345678909 pelo CPF que você deseja validar. O programa informará se o CPF é válido ou inválido com base nos cálculos dos dígitos verificadores.
 
 ## 📫 Contribuindo para Tic Tac Toe
 
